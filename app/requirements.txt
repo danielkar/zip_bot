@@ -1,0 +1,10 @@
+psycopg2-binary>=2.8
+Flask
+urllib3
+telebot
+datetime
+enum34
+python-dotenv
+flask
+PyTelegramBotAPI
+logger
