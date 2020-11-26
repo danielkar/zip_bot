@@ -1,13 +1,13 @@
 import psycopg2
 import config
 from config import USER, PASSWORD, DB
-import datetime
+from datetime import datetime
 import time
 
 """
 conn = psycopg2.connect(dbname='botdb', user='postgres',  host='localhost', port=5433)
 cur = conn.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS usertable (id serial PRIMARY KEY, chat_id int, login varchar(64), repository varchar(64), url varchar(256), date timestamp with time zone, state int);")
+cur.execute("CREATE TABLE IF NOT EXISTS usertable (id serial PRIMARY KEY, chat_id int, login varchar(64), repository varchar(64), url varchar(256), date text, state int);")
 """
 
 #datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -66,12 +66,23 @@ def set_time(chat_id):
     try:
         with psycopg2.connect(dbname='botdb', user='postgres',  host='localhost', port=5433) as conn:
             with conn.cursor() as cur:
-                cur.execute(f"UPDATE usertable SET date = '{datetime.datetime.fromtimestamp(time.time())}' WHERE id={chat_id};")
+                q = """
+                    UPDATE usertable
+                    SET date =  %(createdat)s 
+                    WHERE id= %{chat_id}i;
+                    """
+                cur.execute(q, {'createdat' : datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S.%f'), 'chat_id' : chat_id})
+                # cur.execute(f"UPDATE usertable SET date = '{datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S.%f')}' WHERE id={chat_id};")
         return True
     except:
         with psycopg2.connect(dbname='botdb', user='postgres',  host='localhost', port=5433) as conn:
             with conn.cursor() as cur:
-                cur.execute(f"INSERT INTO usertable (chat_id , date) VALUES ({chat_id}, '{datetime.datetime.fromtimestamp(time.time())}');")
+                q = """
+                    INSERT INTO usertable (chat_id , date)
+                    VALUES (%{chat_id}i, %(createdat)s);
+                    """
+                cur.execute(q, {'createdat' : datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S.%f'), 'chat_id' : chat_id})
+                # cur.execute(f"INSERT INTO usertable (chat_id , date) VALUES ({chat_id}, '{datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S.%f')}');")
         return False
 
 # def check_time(chat_id):

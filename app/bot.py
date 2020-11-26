@@ -4,11 +4,13 @@ from telebot import types
 import config
 import urllib.request
 from functions import check_time
-from datetime import datetime
+from datetime import datetime, time
 import logger
 
 bot = telebot.TeleBot(config.TOKEN)
 
+
+# REPAIR BOT
 # @bot.message_handler(func=lambda message: message)
 # def send(message):
 # 	bot.send_message(message.chat.id, "!")
@@ -51,7 +53,6 @@ def send_file(message):
 		bot.send_document(message.chat.id, f)
 
 	dbworker.set_time(message.chat.id)
-	bot.send_message(message.chat.id, dbworker.get_field(message.chat.id, 'date')[0])
 
 	dbworker.set_state(message.chat.id, config.States.S_SEND_ZIP.value)
 
