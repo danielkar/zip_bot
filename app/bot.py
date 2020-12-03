@@ -52,7 +52,7 @@ def send_file(message):
 	with open(f'./downloads/{message.chat.id}.zip',"rb") as f:
 		bot.send_document(message.chat.id, f)
 
-	dbworker.set_time(message.chat.id)
+	dbworker.intering_in_db(message.chat.id, 'date', str(datetime.now()))
 
 	dbworker.set_state(message.chat.id, config.States.S_SEND_ZIP.value)
 
@@ -69,7 +69,7 @@ def get_file(call):
 		with open(f'./downloads/{call.from_user.id}.zip',"rb") as f:
 			bot.send_document(call.from_user.id, f)
 
-		dbworker.set_time(call.from_user.id)
+		dbworker.intering_in_db(message.chat.id, 'date', str(datetime.now()))
 
 	dbworker.set_state(call.from_user.id, config.States.S_SEND_ZIP.value)
 

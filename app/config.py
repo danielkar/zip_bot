@@ -7,10 +7,13 @@ if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
 TOKEN = os.getenv('TOKEN')
-USER = os.getenv('USER')
+USER = 'postgres' #os.getenv('USER')
 PASSWORD = os.getenv('PASSWORD')
 DB = os.getenv('DB')
 DEBUG = os.getenv('DEBUG')
+HOST = os.getenv('HOST')
+PORT = os.getenv('PORT')
+print(TOKEN, USER, PASSWORD, DB, DEBUG, HOST, PORT)
 
 class States(Enum):
     

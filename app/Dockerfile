@@ -1,7 +1,5 @@
 FROM python:3.6
 RUN apt-get update
-RUN mkdir /app
-WORKDIR /app
-COPY . /app
+COPY . .
 RUN pip install -r requirements.txt
-EXPOSE 5000
+CMD ["python", "main.py", "0.0.0.0:5000"]
