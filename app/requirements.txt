@@ -8,3 +8,5 @@ python-dotenv
 flask
 PyTelegramBotAPI
 logger
+celery
+redis

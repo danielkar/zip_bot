@@ -6,9 +6,10 @@ import urllib.request
 from functions import check_time
 from datetime import datetime, time
 import logger
+from tasks import upload_zip
+
 
 bot = telebot.TeleBot(config.TOKEN)
-
 
 # REPAIR BOT
 # @bot.message_handler(func=lambda message: message)
@@ -43,11 +44,11 @@ def send_file(message):
 	repository = dbworker.get_field(message.chat.id, 'repository')[0]
 
 	url = f'https://github.com/{login}/{repository}/archive/master.zip'
-	print(url)
 
 	dbworker.intering_in_db(message.chat.id, 'url', url)
 
-	urllib.request.urlretrieve(url, f'./downloads/{message.chat.id}.zip')
+	upload_zip.apply_async(args=[message.chat.id, url], ignore_result=True)
+	# urllib.request.urlretrieve(url, f'./downloads/{message.chat.id}.zip')
 
 	with open(f'./downloads/{message.chat.id}.zip',"rb") as f:
 		bot.send_document(message.chat.id, f)
@@ -55,6 +56,7 @@ def send_file(message):
 	dbworker.intering_in_db(message.chat.id, 'date', str(datetime.now()))
 
 	dbworker.set_state(message.chat.id, config.States.S_SEND_ZIP.value)
+
 
 @bot.callback_query_handler(func=lambda call: call.data=='get')
 def get_file(call):
@@ -64,7 +66,12 @@ def get_file(call):
 		bot.send_message(call.from_user.id, dbworker.get_field(call.from_user.id, 'date')[0])
 
 	else:
-		urllib.request.urlretrieve(url, f'./downloads/{call.from_user.id}.zip')
+		login = dbworker.get_field(call.from_user.id, 'login')[0]
+		repository = dbworker.get_field(call.from_user.id, 'repository')[0]
+
+		url = f'https://github.com/{login}/{repository}/archive/master.zip'
+
+		upload_zip.apply_async(args=[call.from_user.id, url], ignore_result=True)
 
 		with open(f'./downloads/{call.from_user.id}.zip',"rb") as f:
 			bot.send_document(call.from_user.id, f)
